@@ -4,9 +4,14 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 import nltk
-import re
+import re 
 nltk.download('stopwords')
 from nltk.corpus import stopwords
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+from wordcloud import WordCloud
 
 # 1. Load Data
 df = pd.read_csv("IMDB Dataset.csv")
@@ -41,3 +46,19 @@ model.fit(X_train_vec, y_train)
 y_pred = model.predict(X_test_vec)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print(classification_report(y_test, y_pred))
+
+
+# Confusion matrix
+cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+sns.heatmap(cm, annot=True, fmt="d", xticklabels=model.classes_, yticklabels=model.classes_)
+plt.title("Confusion Matrix")
+plt.show()
+
+
+# Word cloud for positive reviews
+positive_text = " ".join(df[df['sentiment']=='positive']['cleaned'])
+wordcloud = WordCloud(width=800, height=400, background_color='white').generate(positive_text)
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.title("Word Cloud for Positive Reviews")
+plt.show()
